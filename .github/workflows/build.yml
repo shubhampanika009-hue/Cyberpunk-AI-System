@@ -1,0 +1,73 @@
+name: Supreme AI Core Production APK Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+
+    steps:
+    - name: 1. Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: 2. Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 3. Set up Java 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: 4. Install All System Compilers & Dependencies
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential git zip unzip autoconf libtool pkg-config \
+          zlib1g-dev libffi-dev libssl-dev ccache cmake lld \
+          python3-dev python3-pip python3-setuptools \
+          libncurses5-dev libsqlite3-dev libc6:i386 libstdc++6:i386 zlib1g:i386
+
+    - name: 5. Install Stable Build Tools
+      run: |
+        pip install --upgrade pip setuptools wheel
+        pip install cython==0.29.36 buildozer==1.5.0
+
+    - name: 6. Cache Android SDK & NDK Platform
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.buildozer
+          .buildozer
+        key: ${{ runner.os }}-supreme-build-v5-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-supreme-build-v5-
+
+    - name: 7. Configure Environment Paths
+      run: |
+        echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_NDK_HOME=$HOME/.buildozer/android/platform/android-ndk-r25b" >> $GITHUB_ENV
+        echo "PATH=$HOME/.buildozer/android/platform/android-sdk/tools/bin:$PATH" >> $GITHUB_ENV
+
+    - name: 8. Accept All Android SDK Licenses
+      run: |
+        mkdir -p ~/.buildozer/android/platform/android-sdk/licenses || true
+        echo -e "\n893378d70014b03d41422dd63abd657638232761\nd56f5185472320386425163b279833479c597d24\n24333f8a63b6825ea9c55727f37ce40d732b212d" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+        echo -e "\n84831b9409646a57801ebb35e80710100141a909" > ~/.buildozer/android/platform/android-sdk/licenses/android-sdk-preview-license
+
+    - name: 9. Build Android APK
+      run: |
+        yes | buildozer -v android debug
+
+    - name: 10. Upload Final APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: Supreme-AI-Core-APK
+        path: bin/*.apk
