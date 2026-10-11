@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk AI System - Preview</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #050505; color: #00ffcc; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .phone-frame { width: 100%; max-width: 400px; height: 100%; max-height: 800px; border: 4px solid #ff007f; border-radius: 30px; background: #0a0a0a; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 0 20px #ff007f, inset 0 0 15px #00ffcc; }
+        .header { text-align: center; border-bottom: 2px dashed #00ffcc; padding-bottom: 15px; margin-bottom: 15px; }
+        .header h1 { font-size: 20px; text-shadow: 0 0 8px #00ffcc; color: #00ffcc; }
+        .header p { font-size: 11px; color: #ff007f; margin-top: 5px; }
+        .console { background: #000; border: 1px solid #00ffcc; padding: 10px; height: 180px; overflow-y: auto; font-size: 12px; color: #00ffcc; margin-bottom: 15px; border-radius: 5px; box-shadow: inset 0 0 5px #00ffcc; }
+        .menu { display: flex; flex-direction: column; gap: 10px; }
+        .btn { background: #111; color: #00ffcc; border: 1px solid #00ffcc; padding: 12px; text-align: center; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; text-shadow: 0 0 5px #00ffcc; }
+        .btn:hover { background: #00ffcc; color: #000; box-shadow: 0 0 10px #00ffcc; }
+        .btn-hack { border-color: #ff007f; color: #ff007f; text-shadow: 0 0 5px #ff007f; }
+        .btn-hack:hover { background: #ff007f; color: #000; box-shadow: 0 0 10px #ff007f; }
+        .btn-trade { border-color: #0088ff; color: #0088ff; text-shadow: 0 0 5px #0088ff; }
+        .btn-trade:hover { background: #0088ff; color: #000; box-shadow: 0 0 10px #0088ff; }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <div class="header">
+            <h1>CYBERPUNK AI CORE</h1>
+            <p>> Mobile GUI Interface Preview</p>
+        </div>
+
+        <div class="console" id="console-box">
+            > Initializing Neural Core...<br>
+            > Hacking Agent: Standby<br>
+            > Trading Agent: Synchronized<br>
+            > Termux Automation: Ready<br>
+            > System Status: SECURE & OPTIMAL.
+        </div>
+
+        <div class="menu">
+            <div class="btn btn-hack" onclick="runAction('Hacking Agent', '[-] Scanning open ports...\n[+] Target secure\n[+] Vulnerability Index: 0.0%')">Hacking Agent Module</div>
+            <div class="btn btn-trade" onclick="runAction('Trading Agent', '[*] Analyzing market liquidity...\n[+] Trend: BULLISH\n[+] AI Signal: STRONG BUY')">Trading Agent Module</div>
+            <div class="btn" onclick="runAction('Termux Automation', '[*] Executing background scripts...\n[+] Packages synced successfully.')">Termux Automation</div>
+        </div>
+    </div>
+
+    <script>
+        function runAction(moduleName, logText) {
+            const box = document.getElementById('console-box');
+            box.innerHTML += `<br><br>> [${moduleName}] Executing...<br>` + logText.replace(/\n/g, '<br>');
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
