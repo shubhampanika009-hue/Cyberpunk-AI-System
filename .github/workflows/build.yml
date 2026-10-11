@@ -1,0 +1,32 @@
+name: Supreme AI Core Production APK Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container: kivy/buildozer:latest
+    timeout-minutes: 120
+
+    steps:
+    - name: 1. Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: 2. Fix Git Safe Directory Permission
+      run: |
+        git config --global --add safe.directory /__w/Cyberpunk-AI-System/Cyberpunk-AI-System
+
+    - name: 3. Execute Production Android Build (Allow Root)
+      env:
+        BUILDOZER_ALLOW_ROOT: "1"
+      run: |
+        buildozer -v android debug
+
+    - name: 4. Upload Final Production APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Supreme-AI-Core-APK
+        path: bin/*.apk
