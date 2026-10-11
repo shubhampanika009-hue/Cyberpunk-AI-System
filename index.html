@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERPUNK AI // 5-AGENT COMMAND MATRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050508;
+            --neon-cyan: #00f0ff;
+            --neon-pink: #ff0055;
+            --neon-purple: #9d00ff;
+            --neon-green: #00ff66;
+            --neon-gold: #ffcc00;
+            --terminal-border: #00f0ff55;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            margin: 0;
+            padding: 20px;
+            background-image: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 15px auto;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+            background: rgba(5, 5, 8, 0.96);
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        header {
+            border-bottom: 1px dashed var(--neon-cyan);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: var(--neon-cyan);
+            margin: 0;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .status-badge {
+            background: rgba(0, 255, 102, 0.1);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* Agents Selection Bar */
+        .agents-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .agent-chip {
+            background: #010103;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 8px;
+            font-size: 0.75rem;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .agent-chip:hover, .agent-chip.active {
+            background: var(--neon-cyan);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* Terminal Display Box */
+        .terminal-box {
+            background: #010103;
+            border: 1px solid var(--terminal-border);
+            padding: 15px;
+            height: 220px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+        }
+
+        .log-cyan { color: var(--neon-cyan); }
+        .log-pink { color: var(--neon-pink); }
+        .log-green { color: var(--neon-green); }
+        .log-gold { color: var(--neon-gold); }
+        .log-purple { color: var(--neon-purple); }
+
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .cyber-input {
+            flex: 1;
+            background: #010103;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .btn-send {
+            background: var(--neon-cyan);
+            color: #000;
+            border: none;
+            padding: 0 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cyber-btn {
+            background: transparent;
+            border: 2px solid;
+            padding: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-punch { border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn-punch:hover { background: var(--neon-pink); color: #fff; box-shadow: 0 0 15px var(--neon-pink); }
+
+        .btn-voice { border-color: var(--neon-purple); color: var(--neon-purple); }
+        .btn-voice:hover { background: var(--neon-purple); color: #fff; box-shadow: 0 0 15px var(--neon-purple); }
+
+        .download-zone { text-align: center; border-top: 1px dashed var(--neon-cyan); padding-top: 15px; }
+
+        .dl-button {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+            background: var(--neon-green);
+            color: #000;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        footer { margin-top: 15px; text-align: center; font-size: 0.7rem; color: #557788; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>5-AGENT CYBER MATRIX</h1>
+        <div class="status-badge" id="matrix-status">5 AGENTS ONLINE</div>
+    </header>
+
+    <!-- 5 Specialized Agent Bar -->
+    <div class="agents-bar">
+        <div class="agent-chip active" onclick="selectAgent('ALPHA')">ALPHA (TRADING)</div>
+        <div class="agent-chip" onclick="selectAgent('BETA')">BETA (CYBER)</div>
+        <div class="agent-chip" onclick="selectAgent('GAMMA')">GAMMA (GK/OMNI)</div>
+        <div class="agent-chip" onclick="selectAgent('DELTA')">DELTA (DIAG)</div>
+        <div class="agent-chip" onclick="selectAgent('EPSILON')">EPSILON (VOICE)</div>
+    </div>
+
+    <!-- Terminal Display Screen -->
+    <div class="terminal-box" id="terminal-logs">
+        <span class="log-green">&gt; Active Agent: [ALPHA - TRADING ANALYTICS]</span><br>
+        <span class="log-cyan">&gt; Boss Raja Singh Authenticated [100% ACCESS]</span><br>
+        <span class="log-gold">&gt; All 5 AI female voice modules initialized.<span class="blink">_</span></span>
+    </div>
+
+    <!-- Input Query Section -->
+    <div class="input-group">
+        <input type="text" id="user-query" class="cyber-input" placeholder="किसी भी एजेंट से सवाल पूछें, बॉस..." onkeypress="handleKeyPress(event)">
+        <button class="btn-send" onclick="submitQuery()">ASK AGENT</button>
+    </div>
+
+    <div class="controls-grid">
+        <button class="cyber-btn btn-punch" onclick="executePunchTool()">[ ⚡ PUNCH TOOL ]</button>
+        <button class="cyber-btn btn-voice" onclick="activateVoiceAgent()">[ 🎤 VOICE AGENT ]</button>
+    </div>
+
+    <div class="download-zone">
+        <a href="https://github.com/shubhampanika009-hue/Cyberpunk-AI-System/releases/latest/download/Cyberpunk-AI-System-Ultimate-APK.apk" class="dl-button">
+            DOWNLOAD ULTIMATE APK
+        </a>
+    </div>
+
+    <footer>5-AGENT MATRIX PROTOCOL // COMMANDED BY RAJA SINGH</footer>
+</div>
+
+<script>
+    const terminal = document.getElementById('terminal-logs');
+    let currentAgent = 'ALPHA';
+
+    function logMessage(text, colorClass = 'log-cyan') {
+        terminal.innerHTML += `<span class="${colorClass}">${text}</span><br>`;
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function selectAgent(agentName) {
+        currentAgent = agentName;
+        document.querySelectorAll('.agent-chip').forEach(chip => chip.classList.remove('active'));
+        event.target.classList.add('active');
+
+        logMessage(`> Switched Active Agent to: [${agentName}]`, 'log-gold');
+        speakAI(`एजेंट ${agentName} एक्टिवेट हो गया है बॉस। बताइए क्या काम करना है?`);
+    }
+
+    // Female Voice Synthesizer
+    function speakAI(message) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.3;
+
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoice = voices.find(v => v.lang.includes('hi') && (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Swara')));
+            if (femaleVoice) utterance.voice = femaleVoice;
+
+            utterance.lang = 'hi-IN';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    function handleKeyPress(e) { if (e.key === 'Enter') submitQuery(); }
+
+    function submitQuery() {
+        const input = document.getElementById('user-query');
+        const q = input.value.trim();
+        if (!q) return;
+        logMessage(`> Boss [To ${currentAgent}]: "${q}"`, 'log-cyan');
+        input.value = '';
+        processAgentResponse(q);
+    }
+
+    function executePunchTool() {
+        logMessage('> [BETA & DELTA AGENTS] Running Punch Execution Protocols...', 'log-pink');
+        speakAI('बॉस, पंच टूल एग्जीक्यूट कर दिया गया है। सब कुछ सुरक्षित है।');
+    }
+
+    function activateVoiceAgent() {
+        logMessage('> [EPSILON AGENT] Voice Listening Active...', 'log-purple');
+        speakAI('जी बॉस, बोलिए, मैं आपका कमांड सुन रही हूँ।');
+
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'hi-IN';
+
+        recognition.onresult = (e) => {
+            const cmd = e.results[0][0].transcript;
+            logMessage(`> Voice Command: "${cmd}"`, 'log-cyan');
+            processAgentResponse(cmd);
+        };
+        recognition.start();
+    }
+
+    // 5 Agents Specific Processing Logic
+    function processAgentResponse(q) {
+        let reply = "";
+        
+        if (currentAgent === 'ALPHA') {
+            reply = `बॉस, एजेंट अल्फा मार्केट एनालिटिक्स देख रहा है। "${q}" के लिए मार्केट ट्रेंड पॉजिटिव है।`;
+        } else if (currentAgent === 'BETA') {
+            reply = `बॉस, एजेंट बीटा साइबर सिस्टम जाँच रहा है। कोड निष्पादन में शून्य एरर हैं।`;
+        } else if (currentAgent === 'GAMMA') {
+            reply = `बॉस, एजेंट गामा का ज्ञान कोष तैयार है। सवाल "${q}" का उत्तर डेटाबेस में सेव कर दिया गया है।`;
+        } else if (currentAgent === 'DELTA') {
+            reply = `बॉस, एजेंट डेल्टा डायग्नोस्टिक्स: सभी एंड्रॉइड मॉड्यूल्स और APK परमिशंस 100 प्रतिशत स्वस्थ हैं।`;
+        } else {
+            reply = `बॉस, एजेंट एप्सिलॉन वॉयस कोर: आपका वॉइस कमांड सफलता से प्रोसेस हो गया है।`;
+        }
+
+        logMessage(`> [${currentAgent} AI]: ${reply}`, 'log-green');
+        speakAI(reply);
+    }
+</script>
+
+</body>
+</html>
